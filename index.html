@@ -88,7 +88,7 @@
 <body>
 
 <div id="scene">
-  <div class="title">Isla x Elie</div>
+  <div class="title">Isla</div>
   <canvas id="game" width="380" height="520"></canvas>
   <div id="bubble" class="bubble"></div>
 </div>
@@ -102,10 +102,6 @@ const ctx = canvas.getContext("2d");
 const girl = new Image();
 girl.src = "personaje.png";
 
-/* ===== AGREGADO: TU PERSONAJE ===== */
-const boy = new Image();
-boy.src = "personaje2.png";
-
 /* ============================= */
 /*   SPIDERMAN DECORATIVOS      */
 /* ============================= */
@@ -118,7 +114,7 @@ const decorSources = [
 
 const decorImages = [];
 const decorSize = 65;
-const minDistance = 100;
+const minDistance = 100; // distancia mínima entre ellos
 
 function generatePositions() {
   const positions = [];
@@ -132,7 +128,7 @@ function generatePositions() {
 
     while (!valid) {
       x = Math.random() * (canvas.width - decorSize);
-      y = Math.random() * 220 + 90;
+      y = Math.random() * 220 + 90; // zona superior (no tocar personaje)
 
       valid = true;
 
@@ -163,7 +159,10 @@ function drawDecor() {
   decorImages.forEach(obj => {
     obj.time += 0.02;
 
+    // Fade ultra suave con seno
     const opacity = (Math.sin(obj.time) + 1) / 2;
+
+    // Movimiento flotante
     const floatY = Math.sin(obj.time * 1.5) * 6;
 
     ctx.save();
@@ -215,39 +214,24 @@ document.getElementById("heartBtn").addEventListener("click", () => {
 /*   LOOP PRINCIPAL             */
 /* ============================= */
 
-let loaded = 0;
-function checkLoaded(){
-  loaded++;
-  if(loaded === 2){
-    generatePositions();
-    draw();
-  }
-}
-
-girl.onload = checkLoaded;
-boy.onload = checkLoaded;
+girl.onload = function() {
+  generatePositions();
+  draw();
+};
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawDecor();
+  drawDecor(); // spiderman primero
 
   const scale = 0.5;
+  const spriteWidth = girl.width * scale;
+  const spriteHeight = girl.height * scale;
 
-  const boyWidth = boy.width * scale;
-  const girlWidth = girl.width * scale;
+  const x = canvas.width / 2 - spriteWidth / 2;
+  const y = canvas.height - spriteHeight - 60;
 
-  const spacing = 20;
-  const center = canvas.width / 1.9;
-
-  const boyX = center - boyWidth - spacing/2;
-  const girlX = center + spacing/2;
-
-  const y = canvas.height - (girl.height * scale) - 60;
-
-  /* ===== Dibujar ambos ===== */
-  ctx.drawImage(boy, boyX, y, boyWidth, boy.height * scale);
-  ctx.drawImage(girl, girlX, y, girlWidth, girl.height * scale);
+  ctx.drawImage(girl, x, y, spriteWidth, spriteHeight);
 
   requestAnimationFrame(draw);
 }
